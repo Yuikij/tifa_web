@@ -3,7 +3,7 @@ import request from '@/utils/request';
 
 
 // const server_name = '/';
-const server_name = 'http://192.168.1.96:9080/web_pro/';
+const server_name = 'http://localhost:8081';
 
 export function login(data) {
   return request(server_name + '/login', {

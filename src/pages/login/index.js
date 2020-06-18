@@ -27,11 +27,11 @@ function Login() {
       {
         isLogin ? <Form onFinish={onSubmit}>
             <Form.Item name={'username'} rules={[{ required: true, message: '请输入账号' }]}>
-              <Input prefix={<Icon type="user"/>} placeholder="账号"/>,
+              <Input prefix={<Icon type="user"/>} placeholder="账号"/>
             </Form.Item>
             <Form.Item name={'password'} rules={[{ required: true, message: '请输入密码' }]}>
               <Input prefix={<Icon type="lock"/>} type="password"
-                     placeholder="密码"/>,
+                     placeholder="密码"/>
             </Form.Item>
             <div>
               <Checkbox>
@@ -63,15 +63,15 @@ function Login() {
           </Form> :
           <Form onFinish={onSubmit}>
             <Form.Item name={'username'} rules={[{ required: true, message: '请输入账号' }]}>
-              <Input prefix={<Icon type="user"/>} placeholder="账号"/>,
+              <Input prefix={<Icon type="user"/>} placeholder="账号"/>
             </Form.Item>
             <Form.Item name={'password'} rules={[{ required: true, message: '请输入密码' }]}>
               <Input prefix={<Icon type="lock"/>} type="password"
-                     placeholder="密码"/>,
+                     placeholder="密码"/>
             </Form.Item>
             <Form.Item name={'password'} rules={[{ required: true, message: '请输入密码' }]}>
               <Input prefix={<Icon type="lock"/>} type="password"
-                     placeholder="密码"/>,
+                     placeholder="密码"/>
             </Form.Item>
             <Button htmlType="submit" block>
               完成
