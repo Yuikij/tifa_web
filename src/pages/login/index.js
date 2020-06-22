@@ -95,11 +95,14 @@ function Login() {
     setIsSending(true);
     const clockInterval = setInterval(() => {
       console.log(clock, 'clock');
-      if (clock === 0) {
-        clearInterval(clockInterval);
-        setIsSending(false);
-      }
-      setClock(clock => clock - 1);
+
+      setClock(clock => {
+        if (clock === 0) {
+          clearInterval(clockInterval);
+          setIsSending(false);
+          return 60
+        }
+        return clock - 1});
     }, 1000);
   };
 
