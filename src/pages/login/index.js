@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, message, Form, Input, Checkbox } from 'antd';
+import {
+  Button, message, Form, Input, Checkbox, Row,
+  Col,
+} from 'antd';
 import styles from './index.less';
 import { Link } from 'umi';
-import { login } from '@/service/login';
+import { login, register, setCheckCode } from '@/service/login';
 import router from 'umi/router';
 import { UserOutlined, LockOutlined } from '@ant-design/icons/es/icons';
 
@@ -28,10 +31,14 @@ function Login() {
         span: 16,
         offset: 8,
       },
-    },}
+    },
+  };
 
   const [isLogin, setIsLogin] = useState(true);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [clock, setClock] = useState(60);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     // 使用浏览器的 API 更新页面标题
@@ -39,21 +46,68 @@ function Login() {
   });
 
   const onSubmit = (values) => {
-    values.rememberMe = rememberMe;
-    login(values).then((e) => {
-      if (e.data && e.data.success) {
-        window.localStorage.setItem('token', JSON.stringify(e.data.token));
-        router.push('/');
-        message.success(e.data.msg || '登录成功');
+    if (isLogin) {
+      values.rememberMe = rememberMe;
+      login(values).then((e) => {
+        if (!e.data) {
+          return;
+        }
+        if (e.data.success) {
+          window.localStorage.setItem('token', JSON.stringify(e.data.token));
+          window.localStorage.setItem('user_info', JSON.stringify(e.data.user_info));
+          router.push('/');
+          message.success(e.data.msg || '登录成功');
+        } else {
+          message.error(e.data.msg || '登录失败');
+        }
+      });
+    } else {
+      register(values).then((e) => {
+        if (!e.data) {
+          return;
+        }
+        if (e.data.success) {
+          message.success(e.data.msg || '注册成功');
+          setIsLogin(true);
+        } else {
+          message.error(e.data.msg || '注册失败');
+        }
+      });
+    }
+  };
+
+  const clickSent = () => {
+    let email = form.getFieldValue('email');
+    if (!email) {
+      console.log('先填写邮箱');
+      return;
+    }
+    setCheckCode(email).then((e) => {
+      if (!e.data) {
+        return;
+      }
+      if (e.data.success) {
+        message.success(e.data.msg || '发送成功');
+      } else {
+        message.error(e.data.msg || '发送失败');
       }
     });
+    setIsSending(true);
+    const clockInterval = setInterval(() => {
+      console.log(clock, 'clock');
+      if (clock === 0) {
+        clearInterval(clockInterval);
+        setIsSending(false);
+      }
+      setClock(clock => clock - 1);
+    }, 1000);
   };
 
   return <div className={styles.main}>
     <div style={{ width: '20%' }}>
 
       {
-        isLogin ? <Form onFinish={onSubmit}>
+        isLogin ? <Form onFinish={onSubmit} form={form}>
             <Form.Item name={'username'} rules={[{ required: true, message: '请输入账号' }]}>
               <Input prefix={<UserOutlined/>} placeholder="账号"/>
             </Form.Item>
@@ -92,6 +146,7 @@ function Login() {
             {/*</div>*/}
           </Form> :
           <Form
+            form={form}
             {...formItemLayout}
             onFinish={onSubmit}>
             <Form.Item
@@ -108,7 +163,7 @@ function Login() {
                 },
               ]}
             >
-              <Input />
+              <Input/>
             </Form.Item>
             <Form.Item
               name="nickname"
@@ -121,12 +176,12 @@ function Login() {
                 },
               ]}
             >
-              <Input />
+              <Input/>
             </Form.Item>
-            <Form.Item name={'new_username'} label="账号" rules={[{ required: true, message: '请输入账号' }]}>
+            <Form.Item name={'username'} label="账号" rules={[{ required: true, message: '请输入账号' }]}>
               <Input prefix={<LockOutlined/>} placeholder="账号"/>
             </Form.Item>
-            <Form.Item  hasFeedback name={'new_password'} label="密码" rules={[{ required: true, message: '请输入密码' },
+            <Form.Item hasFeedback name={'password'} label="密码" rules={[{ required: true, message: '请输入密码' },
               ({ getFieldValue }) => ({
                 validator(rule, value) {
                   if (!value || reg.test(value)) {
@@ -136,24 +191,47 @@ function Login() {
                   return Promise.reject('密码由6-12位数字、大小写字母组成');
                 },
               })]}>
-              <Input.Password readonly prefix={<LockOutlined/>}
+              <Input.Password prefix={<LockOutlined/>}
                               placeholder="密码"/>
             </Form.Item>
             <Form.Item
               hasFeedback
               label="确认密码"
-              dependencies={['new_username']}
+              dependencies={['password']}
               name={'confirm'} rules={[{ required: true, message: '请输入密码' }
               , ({ getFieldValue }) => ({
                 validator(rule, value) {
-                  if (!value || getFieldValue('new_username') === value) {
+                  if (!value || getFieldValue('password') === value) {
                     return Promise.resolve();
                   }
                   return Promise.reject('两次密码不相同');
                 },
               })]}>
-              <Input.Password readonly prefix={<LockOutlined/>}
+              <Input.Password prefix={<LockOutlined/>}
                               placeholder="密码"/>
+            </Form.Item>
+            <Form.Item label="验证码" extra="We must make sure that your are a human.">
+              <Row gutter={8}>
+                <Col span={12}>
+                  <Form.Item
+                    name="captcha"
+                    noStyle
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please input the captcha you got!',
+                      },
+                    ]}
+                  >
+                    <Input/>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  {isSending ? <Button disabled={true} onClick={clickSent}>{clock}</Button> :
+                    <Button onClick={clickSent}>发送</Button>}
+
+                </Col>
+              </Row>
             </Form.Item>
             <Form.Item {...tailFormItemLayout}>
               <Button type="primary" htmlType="submit">

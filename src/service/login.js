@@ -44,4 +44,9 @@ export function register(data) {
   return post(server_name + '/register',data);
 }
 
+export function setCheckCode(email) {
+  return post(server_name+'/setCheckCode',{email});
+}
+
+
 
