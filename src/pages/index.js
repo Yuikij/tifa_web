@@ -20,6 +20,30 @@ export default function() {
       }
     },
   };
+  let socket = new WebSocket("ws://localhost:8081/websocket/123");
+  //打开事件
+  //打开事件
+  socket.onopen = function() {
+    console.log("Socket 已打开");
+    socket.send("这是来自客户端的消息" + window.location.href + new Date());
+  };
+  //获得消息事件
+  socket.onmessage = function(msg) {
+    console.log(msg.data);
+    //发现消息进入    开始处理前端触发逻辑
+  };
+  //关闭事件
+  socket.onclose = function() {
+    console.log("Socket已关闭");
+  };
+  //发生了错误事件
+  socket.onerror = function() {
+    alert("Socket发生了错误");
+    //此时可以尝试刷新页面
+  }
+
+
+
   return (
     <div className={styles.normal}>
       <Upload {...props} >

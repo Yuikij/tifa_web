@@ -94,8 +94,6 @@ function Login() {
     });
     setIsSending(true);
     const clockInterval = setInterval(() => {
-      console.log(clock, 'clock');
-
       setClock(clock => {
         if (clock === 0) {
           clearInterval(clockInterval);
