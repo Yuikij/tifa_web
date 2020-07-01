@@ -14,6 +14,8 @@ export default {
   extraBabelPlugins: [
     ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
   ],
+  publicPath: './',
+  base: './',
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
     ['umi-plugin-react', {
@@ -22,7 +24,7 @@ export default {
       dynamicImport: { webpackChunkName: true },
       title: 'tifa-web',
       dll: false,
-      
+
       routes: {
         exclude: [
           /models\//,

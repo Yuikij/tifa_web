@@ -1,7 +1,7 @@
 import styles from './index.css';
 import BasicDemo from '@/component/richText';
 import React, { useState } from 'react';
-import { Button, Upload, Input } from 'antd';
+import { Button, Upload, Input ,message} from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import request from '@/utils/request';
 
@@ -49,14 +49,18 @@ export default function() {
     let data = new FormData();
     data.append('task', "share_like");
     data.append('user_id', dotaId);
-    request("https://act.dota2.com.cn/heavenandhell", {
+    setInterval(()=>{ request("https://act.dota2.com.cn/heavenandhell", {
       method: 'POST',
       // headers: {
       //   'token': token(),
       // },
       // headers: {'Content-Type': 'multipart/form-data'},
       body: data,
+    }).then(e=>{
     });
+    // message.info("点击一次")
+    },5000);
+
   };
 
   return (
