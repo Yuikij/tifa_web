@@ -14,6 +14,7 @@ export default {
   extraBabelPlugins: [
     ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
   ],
+  history: 'hash',
   publicPath: './',
   base: './',
   plugins: [

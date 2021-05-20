@@ -1,12 +1,13 @@
 import styles from './index.css';
 import BasicDemo from '@/component/richText';
 import React, { useState } from 'react';
-import { Button, Upload, Input ,message} from 'antd';
+import { Button, Upload, Input, message, InputNumber } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import request from '@/utils/request';
 
 export default function() {
-  const [dotaId, setDotaId] = useState("");
+  const [dotaId, setDotaId] = useState('');
+  const [time, setTime] = useState(5);
 
   const props = {
     name: 'file',
@@ -44,35 +45,48 @@ export default function() {
   //   alert('Socket发生了错误');
   //   //此时可以尝试刷新页面
   // };
-
+  let Interval;
   const clickId = () => {
+    message.info('开始助力(伊莉雅微笑');
     let data = new FormData();
-    data.append('task', "share_like");
-    data.append('user_id', dotaId);
-    setInterval(()=>{ request("https://act.dota2.com.cn/heavenandhell", {
-      method: 'POST',
-      // headers: {
-      //   'token': token(),
-      // },
-      // headers: {'Content-Type': 'multipart/form-data'},
-      body: data,
-    }).then(e=>{
-    });
-    // message.info("点击一次")
-    },5000);
+    data.append('task', 'share_like');
+    data.append('user_id', dotaId.split('uid=')[1]);
+    Interval = setInterval(() => {
+      request('https://act.dota2.com.cn/heavenandhell', {
+        method: 'POST',
+        // headers: {
+        //   'token': token(),
+        // },
+        // headers: {'Content-Type': 'multipart/form-data'},
+        body: data,
+      }).then(e => {
+      });
+
+    }, time * 1000);
 
   };
 
   return (
     <div className={styles.normal}>
-      <Upload {...props} >
-        <Button>
-          <UploadOutlined/> Click to Upload
-        </Button>
-      </Upload>
-      <Input onChange={(e)=>{
-        setDotaId(e.target.value)}} style={{width:"20%"}} addonBefore="id:" addonAfter={<Button onClick={clickId}>确定</Button>}/>
-      <BasicDemo/>
+      {/*<Upload {...props} >*/}
+      {/*<Button>*/}
+      {/*<UploadOutlined/> Click to Upload*/}
+      {/*</Button>*/}
+      {/*</Upload>*/}
+      <span>分享网址</span>
+      <Input onChange={(e) => {
+        setDotaId(e.target.value);
+      }}/>
+      <span>助力频率</span>
+      <InputNumber onChange={(e) => {
+        setTime(e);
+      }}/>
+      <Button onClick={clickId}>确定</Button>
+      <Button onClick={() => {
+        message.info('stop');
+        clearInterval(Interval);
+      }}>stop</Button>
+      {/*<BasicDemo/>*/}
     </div>
   );
 }

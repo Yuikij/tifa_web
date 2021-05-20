@@ -3,7 +3,8 @@ import router from 'umi/router';
 
 
 // const server_name = '/';
-const server_name = 'http://localhost:8081';
+// const server_name = 'http://localhost:8081';
+const server_name = 'http://106.14.126.197:8080/tifa';
 
 function token() {
   return window.localStorage.getItem('token');
